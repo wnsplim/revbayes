@@ -1924,6 +1924,7 @@ void BirthDeathSamplingTreatmentProcess::swapParameterInternal(const DagNode *ol
     {
         homogeneous_r = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
     // Event probability parameters
     if (oldP == heterogeneous_Lambda)
     {
@@ -1940,6 +1941,42 @@ void BirthDeathSamplingTreatmentProcess::swapParameterInternal(const DagNode *ol
     else if (oldP == homogeneous_Phi)
     {
         homogeneous_Phi = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    
+    // Timeline parameters
+    if (oldP == interval_times_global)
+    {
+        interval_times_global = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == interval_times_speciation)
+    {
+        interval_times_speciation = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == interval_times_extinction)
+    {
+        interval_times_extinction = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == interval_times_sampling)
+    {
+        interval_times_sampling = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == interval_times_treatment)
+    {
+        interval_times_treatment = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+        
+    // Event timeline parameters
+    if (oldP == interval_times_event_speciation)
+    {
+        interval_times_event_speciation = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == interval_times_event_extinction)
+    {
+        interval_times_event_extinction = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == interval_times_event_sampling)
+    {
+        interval_times_event_sampling = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     else
     {
