@@ -411,6 +411,18 @@ double BirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( void ) con
             }
             lnProbTimes += ln_sampling_event_prob;
         }
+        // make sure that the sampling probability at the present was > 0 if there are samples at the present
+        else if ( i == 0 && global_timeline[0] < DBL_EPSILON )
+        {
+            // get the number of samples at present
+            int T_i = int(event_tip_ages[0].size());
+            
+            if ( T_i > 0 )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
     }
 
     // add the serial tip age terms (iii)
@@ -1653,7 +1665,9 @@ int BirthDeathSamplingTreatmentProcess::survivors(double t) const
             return 0;
         }
         survivors = 1;
-    } else {
+    }
+    else
+    {
         if ( t > value->getRoot().getAge() )
         {
             return 0;
@@ -1661,14 +1675,16 @@ int BirthDeathSamplingTreatmentProcess::survivors(double t) const
         survivors = 2;
     }
 
-    for (size_t i=0; i<serial_bifurcation_times.size(); ++i) {
+    for (size_t i=0; i<serial_bifurcation_times.size(); ++i)
+    {
         if (t < serial_bifurcation_times[i])
         {
             survivors++;
         }
     }
 
-    for (size_t i=0; i<serial_tip_ages.size(); ++i) {
+    for (size_t i=0; i<serial_tip_ages.size(); ++i)
+    {
         if (t < serial_tip_ages[i])
         {
             survivors--;
@@ -1678,10 +1694,12 @@ int BirthDeathSamplingTreatmentProcess::survivors(double t) const
     for (size_t i=0; i<global_timeline.size(); ++i)
     {   
         size_t idx = global_timeline.size() - i - 1;
-        if ( global_timeline[idx] < t ) {
+        if ( global_timeline[idx] < t )
+        {
             break;
-        } else if (global_timeline[idx] > t)
-        {   
+        }
+        else if (global_timeline[idx] > t)
+        {
             // by ignoring time = t we implicitly count all tips at a time as survivors
             // This is compatible with the logic in computing event-sampling probabilities but could be changed
             survivors += (int)event_bifurcation_times[idx].size();
