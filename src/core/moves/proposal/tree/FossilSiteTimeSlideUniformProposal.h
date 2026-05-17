@@ -64,6 +64,9 @@ namespace RevBayesCore {
         size_t                                  node_index;
 
         // stored objects to undo proposal
+        std::vector<double> stored_ages;
+        std::vector<int> stored_ages_indices;
+
         Clade                                   clade;
         double                                  stored_age;
         double                                  lambda;                                                                             //!< The value we propose.

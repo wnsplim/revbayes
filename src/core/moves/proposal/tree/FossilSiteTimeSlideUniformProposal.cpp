@@ -111,6 +111,11 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
     
     Tree& tau = tree->getValue();
     
+    // clear stored ages vectors (for undoing proposals)
+    stored_ages.clear();
+    stored_ages_indices.clear();
+
+    
     // We shouldn't have to do this -- it should be enough to, say, invalidate the node_index in the constructor, check that
     // use_index is true AND node_index is invalidated in the prepareProposal() function, and then let that function compute
     // the node_index if (and only if) both conditions are met. However, this is not enough to prevent mismatches between the
@@ -161,7 +166,7 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
         max_age = provided_max_age;
     }
 
-    double max_ages[clade.size()];
+    std::vector<double> max_ages(clade.size());
 
     for (int i = 0; i < clade.size(); i++) {
 
@@ -213,14 +218,15 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
         max_ages[i] = max_age;
     }
 
-    max_age = *min_element(max_ages, max_ages + clade.size());
-    
-    // now we store all necessary values
-    stored_age = my_age;
+    max_age = *std::min_element(max_ages.begin(), max_ages.end());
     
     double size = max_age - min_age;
-    assert(size >= 0); //otherwise the while will hang forever
-    
+
+    if (max_age < min_age)
+    {
+        throw RbException("FossilSiteTimeSlideUniformProposal: invalid age bounds: min_age > max_age");
+    }
+
     double u      = rng->uniform01();
     double delta  = ( lambda * ( u - 0.5 ) );
     
@@ -247,6 +253,10 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
         
         node_index = tree->getValue().getTipIndex( clade.getTaxonName(i) );
         TopologyNode& node = tau.getNode(node_index);
+        
+        // store original ages
+        stored_ages_indices.push_back(node_index);
+        stored_ages.push_back(node.getAge());
 
         node.setAge( new_age );
 
@@ -298,8 +308,11 @@ void FossilSiteTimeSlideUniformProposal::undoProposal( void )
     
     // undo the proposal
     Tree& tau = tree->getValue();
-    TopologyNode* node = &tau.getNode(node_index);
-    node->setAge( stored_age );
+    for (size_t i = 0; i < stored_ages_indices.size(); i++) {
+        int idx = stored_ages_indices[i];
+        double age = stored_ages[i];
+        tau.getNode(idx).setAge(age);
+    }
 }
 
 
