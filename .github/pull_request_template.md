@@ -1,3 +1,5 @@
+<!-- Thank you for contributing to RevBayes! -->
+
 ## PR Type
 <!-- Delete the types that don't apply -->
 - 🆕 New Feature
@@ -18,13 +20,13 @@
 
 ## Approach
 <!-- If the solution is not trivial, please describe
- * HOW does this PR attempts to solve this problem
+ * HOW this PR attempts to solve this problem
  * WHY you attempt to solve it this way
  * WHAT other strategies did you consider, and WHY you decided to pursue this strategy instead.
 -->
 
-## More info
-<!-- Optionally, add more explanation or information here. -->
+## Additional notes
+<!-- Optional: add anything reviewers should know that does not fit above. -->
 
 ## Testing
 <!-- Briefly, How can we be sure that this change works? -->
@@ -38,17 +40,13 @@
 <!-- If non-empty, consider marking this a draft PR. -->
 
 ## Checklist
-<!-- Please keep this checklist. PRs missing the checklist may be marked incomplete until it is restored. -->
-- [ ] I have reviewed the submitted changes and understand their behavior.
-- [ ] I have added tests that prove my fix/feature works (or explained why they are not needed.)
-- [ ] I have run this code locally and verified it fixes the issue (or explained by this wasn't possible.)
-- [ ] New and existing tests pass locally
-- [ ] Documentation was updated where necessary
+- [ ] I have added or updated tests for this change, or explained why they are not needed.
+- [ ] I have added or updated documentation where necessary.
 
 ### AI/LLM Assistance
 - [ ] I used an AI/LLM tool to assist with this PR
   - *If checked, I affirm that:*
-      - *I personally understand every line of code submitted and agree to act as the sole human guarantor of this change.*
+      - *I personally understand the submitted changes and take responsibility for their correctness, style, and maintainability.*
       - *I will answer reviewer questions in my own words without copy-pasting AI output.*
       - *I am the primary author of the PR cover letter (e.g. it wasn't AI/LLM generated).*
       - *I have cleaned up the AI-generated code (e.g. removing verbose comments.)*
