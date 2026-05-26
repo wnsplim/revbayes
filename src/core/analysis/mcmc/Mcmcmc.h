@@ -43,6 +43,7 @@ namespace RevBayesCore {
         void                                    addMonitor(const Monitor &m) override;
         void                                    disableScreenMonitor(bool all, size_t rep) override;                                    //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const override;
+        void                                    checkpoint(void) override;
         void                                    finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct) override; //!< Finish the monitors
         const Model&                            getModel(void) const override;
         double                                  getModelLnProbability(bool likelihood_only) override;
@@ -50,6 +51,7 @@ namespace RevBayesCore {
         RbVector<Move>&                         getMoves(void) override;
         std::string                             getStrategyDescription(void) const override;                                            //!< Get the discription of the strategy used for this sampler.
         void                                    initializeSampler() override;                                                           //!< Initialize objects for mcmc sampling
+        void                                    initializeSamplerFromCheckpoint(void) override;
         void                                    monitor(std::uint64_t g) override;
         void                                    nextCycle(bool advanceCycle) override;
         void                                    printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Move &mv, bool current_period) const;

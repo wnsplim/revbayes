@@ -288,6 +288,12 @@ void Mcmcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceComb
 }
 
 
+void Mcmcmc::checkpoint( void )
+{
+    fullCheckpoint();
+}
+
+
 void Mcmcmc::fullCheckpoint( void )
 {
     
@@ -332,6 +338,12 @@ void Mcmcmc::fullCheckpoint( void )
         
     }
     
+}
+
+
+void Mcmcmc::initializeSamplerFromCheckpoint( void )
+{
+    fullInitializeSamplerFromCheckpoint();
 }
 
 
