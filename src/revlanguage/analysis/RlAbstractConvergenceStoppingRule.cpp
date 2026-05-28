@@ -13,7 +13,7 @@
 #include "RlString.h"
 #include "SemMin.h"
 #include "TypeSpec.h"
-#include "Natural.h"
+#include "IntegerPos.h"
 #include "RevObject.h"
 #include "RevPtr.h"
 #include "RevVariable.h"
@@ -90,7 +90,7 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
     {
         
         memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), "The name of the file containing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "frequency", Natural::getClassTypeSpec() , "The frequency how often to check for convergence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
+        memberRules.push_back( new ArgumentRule( "frequency", IntegerPos::getClassTypeSpec() , "The frequency how often to check for convergence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new IntegerPos(10000) ) );
         
         std::vector<std::string> bMethods;
         bMethods.push_back( "ESS" );
