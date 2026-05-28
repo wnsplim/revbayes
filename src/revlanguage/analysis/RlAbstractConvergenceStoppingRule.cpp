@@ -7,10 +7,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "EssMax.h"
+#include "FixedBurnin.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "RlAbstractConvergenceStoppingRule.h"
 #include "RbException.h"
 #include "RlString.h"
+#include "RlUserInterface.h"
 #include "SemMin.h"
 #include "TypeSpec.h"
 #include "IntegerPos.h"
@@ -44,11 +47,24 @@ RevBayesCore::BurninEstimatorContinuous* AbstractConvergenceStoppingRule::constr
     
     if ( bm == "ESS" )
     {
+        if ( burnin != NULL && burnin->getName() != ".burnin" )
+        {
+            RBOUT( "Warning: the `burnin` argument is ignored when `burninMethod` is \"ESS\"." );
+        }
         burninEst = new RevBayesCore::EssMax();
     }
     else if ( bm == "SEM" )
     {
+        if ( burnin != NULL && burnin->getName() != ".burnin" )
+        {
+            RBOUT( "Warning: the `burnin` argument is ignored when `burninMethod` is \"SEM\"." );
+        }
         burninEst = new RevBayesCore::SemMin();
+    }
+    else if ( bm == "fixed" )
+    {
+        double fraction = static_cast<const Probability &>( burnin->getRevObject() ).getValue();
+        burninEst = new RevBayesCore::FixedBurnin( fraction );
     }
     else
     {
@@ -95,8 +111,9 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
         std::vector<std::string> bMethods;
         bMethods.push_back( "ESS" );
         bMethods.push_back( "SEM" );
-        //        optionsUnits.push_back( "fixed" );
+        bMethods.push_back( "fixed" );
         memberRules.push_back( new OptionRule( "burninMethod", new RlString("ESS"), bMethods, "Which type of burnin method to use." ) );
+        memberRules.push_back( new ArgumentRule( "burnin", Probability::getClassTypeSpec(), "The fraction of samples to discard as burnin (only used when burninMethod is \"fixed\").", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1) ) );
         
         
         rules_set = true;
@@ -119,7 +136,11 @@ const TypeSpec& AbstractConvergenceStoppingRule::getTypeSpec( void ) const
 void AbstractConvergenceStoppingRule::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "burninMethod" )
+    if ( name == "burnin" )
+    {
+        burnin = var;
+    }
+    else if ( name == "burninMethod" )
     {
         burninMethod = var;
     }
