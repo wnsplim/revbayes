@@ -113,7 +113,7 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
         bMethods.push_back( "SEM" );
         bMethods.push_back( "fixed" );
         memberRules.push_back( new OptionRule( "burninMethod", new RlString("ESS"), bMethods, "Which type of burnin method to use." ) );
-        memberRules.push_back( new ArgumentRule( "burnin", Probability::getClassTypeSpec(), "The fraction of samples to discard as burnin (only used when burninMethod is \"fixed\").", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1) ) );
+        memberRules.push_back( new ArgumentRule( "burnin", Probability::getClassTypeSpec(), "The fraction of samples to discard as burnin (only used when burninMethod is \"fixed\").", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         
         
         rules_set = true;

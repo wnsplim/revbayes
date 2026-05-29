@@ -4993,7 +4993,7 @@ burnin lengths.
 
 Alternatively, the user may set `burninMethod` to `"fixed"`, which discards a
 constant fraction of the samples collected up to that point. This fraction can
-be specified using the `burnin` argument, and is set to 0.1 by default. The
+be specified using the `burnin` argument, and is set to 0.25 by default. The
 `burnin` argument has no effect if the `"ESS"` or `"SEM"` options are chosen,
 and a corresponding warning is displayed if the user explicitly sets the
 argument without specifying `burninMethod="fixed"`. The `"fixed"` option is 
@@ -5065,7 +5065,7 @@ burnin lengths.
 
 Alternatively, the user may set `burninMethod` to `"fixed"`, which discards a
 constant fraction of the samples collected up to that point. This fraction can
-be specified using the `burnin` argument, and is set to 0.1 by default. The
+be specified using the `burnin` argument, and is set to 0.25 by default. The
 `burnin` argument has no effect if the `"ESS"` or `"SEM"` options are chosen,
 and a corresponding warning is displayed if the user explicitly sets the
 argument without specifying `burninMethod="fixed"`. The `"fixed"` option is 
@@ -5193,7 +5193,7 @@ burnin lengths.
 
 Alternatively, the user may set `burninMethod` to `"fixed"`, which discards a
 constant fraction of the samples collected up to that point. This fraction can
-be specified using the `burnin` argument, and is set to 0.1 by default. The
+be specified using the `burnin` argument, and is set to 0.25 by default. The
 `burnin` argument has no effect if the `"ESS"` or `"SEM"` options are chosen,
 and a corresponding warning is displayed if the user explicitly sets the
 argument without specifying `burninMethod="fixed"`. The `"fixed"` option is 
@@ -5257,7 +5257,7 @@ burnin lengths.
 
 Alternatively, the user may set `burninMethod` to `"fixed"`, which discards a
 constant fraction of the samples collected up to that point. This fraction can
-be specified using the `burnin` argument, and is set to 0.1 by default. The
+be specified using the `burnin` argument, and is set to 0.25 by default. The
 `burnin` argument has no effect if the `"ESS"` or `"SEM"` options are chosen,
 and a corresponding warning is displayed if the user explicitly sets the
 argument without specifying `burninMethod="fixed"`. The `"fixed"` option is 
