@@ -47,6 +47,10 @@ RevBayesCore::BurninEstimatorContinuous* AbstractConvergenceStoppingRule::constr
     
     if ( bm == "ESS" )
     {
+        // We want to throw a warning when the user explicitly specifies the `burnin` argument while simultaneously setting
+        // `burninMethod` to "ESS" or "SEM". However, the argument has a default value, so it will not be NULL even if the user does
+        // not explicitly set it. To circumvent the issue, we will exploit an implicit convention in Function::processArguments():
+        // when an optional parameter is assigned its ArgumentRule default, its name is prepended with a leading dot.
         if ( burnin != NULL && burnin->getName() != ".burnin" )
         {
             RBOUT( "Warning: the `burnin` argument is ignored when `burninMethod` is \"ESS\"." );
