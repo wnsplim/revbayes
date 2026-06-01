@@ -10,6 +10,7 @@
    srMinESS (RealPos<any> minEss,
              String<any> filename,
              IntegerPos<any> frequency,
-             String<any> burninMethod {valid options: "ESS"|"SEM"})
+             String<any> burninMethod {valid options: "ESS"|"SEM"|"fixed"},
+             Probability<any> burnin)
    
    Missing Variable:	Variable stopping_rules does not exist
