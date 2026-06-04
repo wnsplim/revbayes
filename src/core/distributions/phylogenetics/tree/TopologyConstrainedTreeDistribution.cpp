@@ -981,17 +981,8 @@ Tree* TopologyConstrainedTreeDistribution::simulateRootedTree( bool alwaysReturn
 }
 
 
-/**
- *
- */
 Tree* TopologyConstrainedTreeDistribution::simulateUnrootedTree( void )
 {
-    
-    // the time tree object (topology & times)
-    Tree *psi = new Tree();
-    
-    // internally we treat unrooted topologies the same as rooted
-    psi->setRooted( false );
     
     UniformTopologyBranchLengthDistribution* tree_base_distribution = dynamic_cast<UniformTopologyBranchLengthDistribution*>( base_distribution );
     if ( tree_base_distribution == NULL )
@@ -1001,22 +992,9 @@ Tree* TopologyConstrainedTreeDistribution::simulateUnrootedTree( void )
     const std::vector<Taxon> &taxa = tree_base_distribution->getTaxa();
     size_t num_taxa = taxa.size();
     
-    // create the tip nodes
-    std::vector<TopologyNode*> nodes;
-    for (size_t i=0; i<num_taxa; ++i)
-    {
-        
-        // create the i-th taxon
-        TopologyNode* node = new TopologyNode( taxa[i], i );
-        
-        // add the new node to the list
-        nodes.push_back( node );
-        
-    }
-    
     if ( backbone_topology != NULL )
     {
-        psi = backbone_topology->getValue().clone();
+        Tree *psi = backbone_topology->getValue().clone();
         std::vector<TopologyNode*> inserted_nodes = psi->getNodes();
         
         for (size_t i=0; i<num_taxa; ++i)
@@ -1083,7 +1061,28 @@ Tree* TopologyConstrainedTreeDistribution::simulateUnrootedTree( void )
         // initialize the topology by setting the root
         psi->setRoot(&psi->getRoot(), true);
         
+        tree_base_distribution->assignBranchLengths( *psi );
+        
         return psi;
+    }
+    
+    // the time tree object (topology & times)
+    Tree *psi = new Tree();
+    
+    // internally we treat unrooted topologies the same as rooted
+    psi->setRooted( false );
+    
+    // create the tip nodes
+    std::vector<TopologyNode*> nodes;
+    for (size_t i=0; i<num_taxa; ++i)
+    {
+        
+        // create the i-th taxon
+        TopologyNode* node = new TopologyNode( taxa[i], i );
+        
+        // add the new node to the list
+        nodes.push_back( node );
+        
     }
     
     // we need a sorted vector of constraints, starting with the smallest
