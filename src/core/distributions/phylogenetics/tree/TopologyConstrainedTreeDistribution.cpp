@@ -1218,6 +1218,8 @@ Tree* TopologyConstrainedTreeDistribution::simulateUnrootedTree( void )
     // initialize the topology by setting the root
     psi->setRoot(root, true);
     
+    tree_base_distribution->assignBranchLengths( *psi );
+    
     return psi;
 }
 
