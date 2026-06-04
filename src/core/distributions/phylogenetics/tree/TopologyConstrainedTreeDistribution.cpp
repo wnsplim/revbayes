@@ -583,9 +583,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( SimulationCondition c )
     {
         if ( rooting_known == false )
         {
-//            base_distribution->redrawValue();
-//            is_rooted = base_distribution->getValue().isRooted();
-            is_rooted = true;
+            is_rooted = base_distribution->getValue().isRooted();
             rooting_known = true;
             value = NULL;
         }
