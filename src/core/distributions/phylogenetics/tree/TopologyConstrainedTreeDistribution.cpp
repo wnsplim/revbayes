@@ -601,6 +601,14 @@ void TopologyConstrainedTreeDistribution::redrawValue( SimulationCondition c )
     else
     {
         new_value = starting_tree->clone();
+        
+        // If the cast of the base_distribution to UniformTopologyBranchLengthDistributions succeeds, replace any NaN or zero branch
+        // lengths in the starting tree
+        UniformTopologyBranchLengthDistribution* bl_dist = dynamic_cast<UniformTopologyBranchLengthDistribution*>( base_distribution );
+        if ( bl_dist != NULL )
+        {
+            bl_dist->assignBranchLengths( *new_value );
+        }
     }
     
     if ( value != NULL )
