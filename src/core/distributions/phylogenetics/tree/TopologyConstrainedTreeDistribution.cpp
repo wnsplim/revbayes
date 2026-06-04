@@ -611,7 +611,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( SimulationCondition c )
     {
         new_value = starting_tree->clone();
         
-        // If the cast of the base_distribution to UniformTopologyBranchLengthDistributions succeeds, replace any NaN or zero branch
+        // if the cast of the base_distribution to UniformTopologyBranchLengthDistributions succeeds, replace any NaN or zero branch
         // lengths in the starting tree
         UniformTopologyBranchLengthDistribution* bl_dist = dynamic_cast<UniformTopologyBranchLengthDistribution*>( base_distribution );
         if ( bl_dist != NULL )
@@ -634,6 +634,11 @@ void TopologyConstrainedTreeDistribution::redrawValue( SimulationCondition c )
     // recompute the active clades
     dirty_nodes = std::vector<bool>( value->getNumberOfNodes(), true );
     active_clades = std::vector<RbBitSet>(value->getNumberOfInteriorNodes(), RbBitSet());
+    
+    for (size_t i = 0; i < num_backbones; ++i)
+    {
+        active_backbone_clades[i].assign(value->getNumberOfInteriorNodes(), RbBitSet());
+    }
 
     recursivelyUpdateClades( value->getRoot() );
     
