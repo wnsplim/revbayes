@@ -19,6 +19,7 @@ taxa <- readTaxonData("data/bears_taxa.tsv")
 # Import the morphological character matrix #
 # this file contains only the taxa for which morphological characters are available #
 morpho <- readDiscreteCharacterData("data/bears_morphology.nex")
+morpho.addMissingTaxa( taxa )
 
 ## helpers
 n_taxa <- taxa.size()
