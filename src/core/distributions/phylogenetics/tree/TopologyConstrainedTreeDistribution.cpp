@@ -161,6 +161,14 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const T
         this->addParameter( *it );
     }
     
+    if ( num_backbones > 0 )
+    {
+        std::fill( dirty_nodes.begin(), dirty_nodes.end(), true );
+        recursivelyUpdateClades( value->getRoot() );
+        stored_clades = active_clades;
+        stored_backbone_clades = active_backbone_clades;
+    }
+    
 }
 
 
