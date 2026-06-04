@@ -6,7 +6,7 @@
 #include "Proposal.h"
 #include "StochasticNode.h"
 #include "Tree.h"
-#include "Clade.h"
+#include "Taxon.h"
 #include "RbVector.h"
 #include "RbVectorImpl.h"
 
@@ -32,7 +32,7 @@ namespace RevBayesCore {
                                            TypedDagNode<double>* o,
                                            TypedDagNode<double>* ma,
                                            TypedDagNode<double>* mi,
-                                           const Clade &c,
+                                           const RbVector<Taxon> &t,
                                            double l,
                                            double r=0.44);                                                      //!<  constructor
         
@@ -67,7 +67,7 @@ namespace RevBayesCore {
         std::vector<double> stored_ages;
         std::vector<int> stored_ages_indices;
 
-        Clade                                   clade;
+        const RbVector<Taxon>                   taxa;
         double                                  stored_age;
         double                                  lambda;                                                                             //!< The value we propose.
 

@@ -15,8 +15,7 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "Taxon.h"
-#include "RlClade.h"
-#include "Clade.h"
+#include "RlTaxon.h"
 #include "RbVector.h"
 #include "RbVectorImpl.h"
 #include "TreeChangeEventHandler.h"
@@ -31,12 +30,12 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-FossilSiteTimeSlideUniformProposal::FossilSiteTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o, TypedDagNode<double> *ma, TypedDagNode<double> *mi, const Clade &c, double l, double r ) : Proposal(r),
+FossilSiteTimeSlideUniformProposal::FossilSiteTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o, TypedDagNode<double> *ma, TypedDagNode<double> *mi, const RbVector<Taxon> &t, double l, double r ) : Proposal(r),
     tree( n ),
     origin( o ),
     max( ma ),
     min( mi ),
-    clade( c ),
+    taxa( t ),
     lambda( l )
 {
     // tell the base class to add the node
@@ -124,7 +123,7 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
 
 
     // change this to node_indices
-    node_index = tree->getValue().getTipIndex( clade.getTaxonName(0) );
+    node_index = tree->getValue().getTipIndex( taxa[0].getName() );
 
 
     TopologyNode& node = tau.getNode(node_index);
@@ -166,11 +165,11 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
         max_age = provided_max_age;
     }
 
-    std::vector<double> max_ages(clade.size());
+    std::vector<double> max_ages(taxa.size());
 
-    for (int i = 0; i < clade.size(); i++) {
+    for (int i = 0; i < taxa.size(); i++) {
 
-        node_index = tree->getValue().getTipIndex( clade.getTaxonName(i) );
+        node_index = tree->getValue().getTipIndex( taxa[i].getName() );
 
         TopologyNode& node = tau.getNode(node_index);
         TopologyNode& parent = node.getParent();
@@ -249,9 +248,9 @@ double FossilSiteTimeSlideUniformProposal::doProposal( void )
     } while ( new_age < min_age || new_age > max_age );
     
     // set the ages to all tips from site
-    for (int i = 0; i < clade.size(); i++) {
+    for (int i = 0; i < taxa.size(); i++) {
         
-        node_index = tree->getValue().getTipIndex( clade.getTaxonName(i) );
+        node_index = tree->getValue().getTipIndex( taxa[i].getName() );
         TopologyNode& node = tau.getNode(node_index);
         
         // store original ages
@@ -328,7 +327,7 @@ void FossilSiteTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode
     if (oldN == tree)
     {
         tree = static_cast<StochasticNode<Tree>* >(newN) ;
-        node_index = tree->getValue().getTipIndex( clade.getTaxonName(0) );
+        node_index = tree->getValue().getTipIndex( taxa[0].getName() );
     }
     else if (oldN == origin)
     {

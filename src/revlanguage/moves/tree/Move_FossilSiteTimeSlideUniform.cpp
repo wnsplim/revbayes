@@ -26,7 +26,6 @@
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "Tree.h"
-#include "RlClade.h"
 #include "RbVector.h"
 #include "ModelVector.h"
 
@@ -85,9 +84,9 @@ void Move_FossilSiteTimeSlideUniform::constructInternalObject( void )
         mi = static_cast<const RealPos &>( min->getRevObject() ).getDagNode();
     }
     
-    const RevBayesCore::Clade &c = static_cast<const Clade &>( clade->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::Taxon>& taxa_vec = static_cast<const ModelVector<Taxon>&>( taxa->getRevObject() ).getValue();
 
-    RevBayesCore::FossilSiteTimeSlideUniformProposal *p = new RevBayesCore::FossilSiteTimeSlideUniformProposal( t, org, ma, mi, c, de, tt );
+    RevBayesCore::FossilSiteTimeSlideUniformProposal *p = new RevBayesCore::FossilSiteTimeSlideUniformProposal( t, org, ma, mi, taxa_vec, de, tt );
 
     value = new RevBayesCore::MetropolisHastingsMove(p, we, tu);
 }
@@ -154,7 +153,7 @@ const MemberRules& Move_FossilSiteTimeSlideUniform::getParameterRules(void) cons
         std::vector<TypeSpec> tip_index_arg_types;
         tip_index_arg_types.push_back( RlString::getClassTypeSpec() );
         tip_index_arg_types.push_back( Taxon::getClassTypeSpec() );
-        move_member_rules.push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec(), "A clade object with fossils from the same site", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+        move_member_rules.push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), "A vector of taxon objects with fossils from the same site", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
         move_member_rules.push_back( new ArgumentRule( "delta" , RealPos::getClassTypeSpec()  , "The window size parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
         move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
@@ -208,9 +207,9 @@ void Move_FossilSiteTimeSlideUniform::setConstParameter(const std::string& name,
     {
         origin = var;
     }
-    else if (name == "clade")
+    else if (name == "taxa")
     {
-        clade = var;
+        taxa = var;
     }
     else if (name == "max")
     {
