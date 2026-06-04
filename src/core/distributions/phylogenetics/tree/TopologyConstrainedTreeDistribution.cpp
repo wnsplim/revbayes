@@ -238,6 +238,7 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
 {
     using namespace RbConstants;
 
+    std::fill( dirty_nodes.begin(), dirty_nodes.end(), true );
     recursivelyUpdateClades( value->getRoot() );
     
     // first check if the current tree matches the clade constraints
