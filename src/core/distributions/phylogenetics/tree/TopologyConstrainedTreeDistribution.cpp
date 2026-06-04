@@ -839,8 +839,6 @@ Tree* TopologyConstrainedTreeDistribution::simulateRootedTree( bool alwaysReturn
 
     // complain if we have conflicts
     checkCladesConsistent(sorted_clades);
-
-    size_t num_clades = sorted_clades.size();
     std::sort(sorted_clades.begin(), sorted_clades.end(), cladeSmaller);
 
     /*
@@ -1129,11 +1127,13 @@ Tree* TopologyConstrainedTreeDistribution::simulateUnrootedTree( void )
         
     }
     
-    
     // create a clade that contains all species
     Clade all_species = Clade(taxa);
     sorted_clades.push_back(all_species);
 
+    // complain if we have conflicts
+    checkCladesConsistent(sorted_clades);
+    std::sort(sorted_clades.begin(), sorted_clades.end(), cladeSmaller);
     
     std::vector<Clade> virtual_taxa;
     int i = -1;
