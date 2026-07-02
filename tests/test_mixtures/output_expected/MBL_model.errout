@@ -1,0 +1,28 @@
+   Successfully read one character matrix from file 'data/primates_small.nex'
+   
+   Running burn-in phase of Monte Carlo sampler for 2000 iterations.
+   This simulation runs 1 independent replicate.
+   The simulator uses 33 different moves in a random move schedule with 65 moves per iteration
+   
+
+Progress:
+0---------------25---------------50---------------75--------------100
+********************************************************************
+
+   
+   Running MCMC simulation
+   This simulation runs 1 independent replicate.
+   The simulator uses 33 different moves in a random move schedule with 65 moves per iteration
+   
+
+Iter        |      Posterior   |     Likelihood   |          Prior   |     br_lens[1]      |  br_lens[2]      |  br_lens[3]      |  br_lens[4]      |  br_lens[5]      |  br_lens[6]      |  br_lens[7]   |    elapsed   |        ETA   |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+0           |       -19.9761   |       -12.1163   |       -7.85971   |      0.0263108      |   0.0668743      |    0.114498      |    0.460986      |    0.124549      |   0.0797137      |    0.220263   |   00:00:00   |   --:--:--   |
+10          |       -18.3894   |        -11.999   |       -6.39037   |       0.278663      |   0.0385214      |   0.0178802      |    0.170546      |   0.0423795      |   0.0322724      |    0.499017   |   00:00:00   |   --:--:--   |
+   Appending to previous MCMC simulation of 10 iterations
+   This simulation runs 1 independent replicate.
+   The simulator uses 33 different moves in a random move schedule with 65 moves per iteration
+   
+
+Iter        |      Posterior   |     Likelihood   |          Prior   |     br_lens[1]      |  br_lens[2]      |  br_lens[3]      |  br_lens[4]      |  br_lens[5]      |  br_lens[6]      |  br_lens[7]   |    elapsed   |        ETA   |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
