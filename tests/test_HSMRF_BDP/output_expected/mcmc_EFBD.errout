@@ -5,7 +5,3 @@
    This simulation runs 2 independent replicates.
    The simulator uses 167 different moves in a random move schedule with 808 moves per iteration
    
-
-Iter        |      Posterior   |     Likelihood   |          Prior   |   extinction..   |   fossilizat..   |   speciation..   |    elapsed   |        ETA   |
--------------------------------------------------------------------------------------------------------------------------------------------------------------
-0           |   -7.33205e+06   |       -719.035   |   -7.33133e+06   |       1.398496   |       12.06098   |       1.308559   |   00:00:00   |   --:--:--   |

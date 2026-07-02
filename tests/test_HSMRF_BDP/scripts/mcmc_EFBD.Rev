@@ -211,8 +211,6 @@ monitors.append( mnFile(filename="output/EFBD_HSMRF_fossilization_rate_times.log
 monitors.append( mnFile(filename="output/EFBD_HSMRF_mass_extinction_probabilities.log",printgen=10, separator = TAB, mass_extinction_probabilities) )
 monitors.append( mnFile(filename="output/EFBD_HSMRF_mass_extinction_rate_times.log",printgen=10, separator = TAB, interval_times) )
 
-monitors.append( mnScreen(printgen=100, speciation_rate_global_scale, extinction_rate_global_scale, fossilization_rate_global_scale) )
-
 
 
 ################
