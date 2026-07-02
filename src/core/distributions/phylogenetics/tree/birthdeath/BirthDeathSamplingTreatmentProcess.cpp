@@ -74,7 +74,6 @@ BirthDeathSamplingTreatmentProcess::BirthDeathSamplingTreatmentProcess(const Typ
     interval_times_event_speciation(event_sampling_timeline),
     interval_times_event_extinction(event_extinction_timeline),
     interval_times_event_sampling(event_sampling_timeline),
-    offset( 0.0 ),
     taxa(tn),
     age_check_precision(age_check_precision)
 {
@@ -159,8 +158,6 @@ BirthDeathSamplingTreatmentProcess::BirthDeathSamplingTreatmentProcess(const Typ
     heterogeneous_R = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_event_treatment);
 
     addParameter( heterogeneous_R );
-
-    //TODO: should check that the first interval time is not less than the first tip in offset computation
 
     //TODO: returning neginf and nan are not currently consistently used for different issues with invalid values.
 
@@ -781,40 +778,7 @@ size_t BirthDeathSamplingTreatmentProcess::findIndex(double t, const std::vector
     }
 }
 
-// calculate offset so we can set t_0 to time of most recent tip
-void BirthDeathSamplingTreatmentProcess::getOffset(void) const
-{
-    // On first pass, there is no tree, so we can't loop over nodes
-    // Get taxon ages directly from taxa instead
-    if ( value->getNumberOfNodes() == 0 )
-    {
-        offset = RbConstants::Double::max;
-        for (size_t i = 0; i < taxa.size(); i++)
-        {
-            const Taxon& n = taxa[i];
 
-            if ( n.getAge() < offset )
-            {
-                offset = n.getAge();
-            }
-        }
-    }
-    // On later passes we have the tree, to avoid any issues with tree and taxon age mismatch, get ages from tree
-    else
-    {
-        offset = RbConstants::Double::max;
-        for (size_t i = 0; i < value->getNumberOfNodes(); i++)
-        {
-            const TopologyNode& n = value->getNode( i );
-
-            if ( n.getAge() < offset )
-            {
-                offset = n.getAge();
-            }
-        }
-    }
-
-}
 
 bool BirthDeathSamplingTreatmentProcess::isConstantRate(void) const
 {
@@ -1327,10 +1291,8 @@ void BirthDeathSamplingTreatmentProcess::prepareTimeline( void ) const
 
     }
 
-    // @TODO: @ANDY: Double check the offset works
-    // Add s_0
-    getOffset();
-    global_timeline.insert(global_timeline.begin(),offset);
+    // Add the present time to our timeline
+    global_timeline.insert(global_timeline.begin(), 0.0);
 
     // For each parameter vector, we now make sure that its size matches the size of the global vector
     // For a RATE parameter, there are three cases
@@ -1460,7 +1422,7 @@ void BirthDeathSamplingTreatmentProcess::prepareTimeline( void ) const
         }
     }
 
-    // Get vector of burst death (mass extinction) probabilities
+    // Get vector of burst speciation probabilities
     // For R, the cases are as follows
     //     1) It is a vector and it is of length phi_event.size() - 1, in which case we simply add R[0] = 0.0 and we can move on
     //     2) It is a vector and it DOES NOT match the size of the global timeline, in which case we must expand it to match
