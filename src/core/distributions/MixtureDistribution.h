@@ -7,8 +7,6 @@
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
-#include <iostream>
-
 namespace RevBayesCore {
     
     
@@ -298,8 +296,10 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType *v, bo
 
     if ( index >= vals.size() )
     {
-        std::cerr << "Warning: mixture allocation index could not be reconstructed from value. Hidden state not restored." << std::endl;
-        index = 0;
+        throw RbException() << "Mixture allocation index could not be reconstructed from the value. "
+                            << "This usually means the trace or checkpoint file was written by an older "
+                            << "version of RevBayes that did not record the mixture allocation index. "
+                            << "Please regenerate it with the current version of RevBayes.";
     }
 
     // delegate class
