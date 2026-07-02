@@ -51,7 +51,6 @@ mymodel = model(seq)
 
 monitors.append(mnModel(filename="output/MBL.log", printgen=2, separator=TAB))
 monitors.append(mnFile(filename="output/MBL.trees", printgen=2, separator=TAB, phylogeny))
-monitors.append(mnScreen(printgen=10, br_lens))
 monitors.append(mnStochasticVariable(filename="output/MBL.var", printgen=2))
 
 mymcmc = mcmc(mymodel, monitors, moves, nruns=1, combine="mixed")
