@@ -624,17 +624,9 @@ bool BirthDeathSamplingTreatmentProcess::countAllNodes(void) const
       }
       else if ( n.isTip() && !n.isFossil() )
       {
-          // Node is at present, this can happen even if Phi[0] = 0, so we check if there is really a sampling event at the present
-          if (phi_event[0] >= DBL_EPSILON)
-          {
-              // node is extant leaf
-              num_extant_taxa++;
-              event_tip_ages[0].push_back(0.0);
-          }
-          else
-          {
-              serial_tip_ages.push_back(0.0);
-          }
+          // node is extant leaf
+          num_extant_taxa++;
+          event_tip_ages[0].push_back(0.0);
       }
       else if ( n.isInternal() && !n.getChild(0).isSampledAncestorTip() && !n.getChild(1).isSampledAncestorTip() )
       {
