@@ -71,7 +71,7 @@ BirthDeathSamplingTreatmentProcess::BirthDeathSamplingTreatmentProcess(const Typ
     interval_times_extinction(extinction_timeline),
     interval_times_sampling(sampling_timeline),
     interval_times_treatment(treatment_timeline),
-    interval_times_event_speciation(event_sampling_timeline),
+    interval_times_event_speciation(event_speciation_timeline),
     interval_times_event_extinction(event_extinction_timeline),
     interval_times_event_sampling(event_sampling_timeline),
     taxa(tn),
