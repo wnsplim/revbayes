@@ -1942,6 +1942,10 @@ void BirthDeathSamplingTreatmentProcess::swapParameterInternal(const DagNode *ol
     {
         homogeneous_Phi = static_cast<const TypedDagNode<double>* >( newP );
     }
+    else if (oldP == heterogeneous_R)
+    {
+        heterogeneous_R = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
     
     // Timeline parameters
     if (oldP == interval_times_global)
