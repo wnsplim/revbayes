@@ -4,7 +4,7 @@
    This simulation runs 1 independent replicate.
    The simulator uses 22 different moves in a random move schedule with 152 moves per iteration
    
-   Processing file "test_FBD/output_expected/bears_mvFossilSiteTimeSlideUniform.trees"
+   Processing file "output/bears_mvFossilSiteTimeSlideUniform.trees"
 
 Progress:
 0---------------25---------------50---------------75--------------100
