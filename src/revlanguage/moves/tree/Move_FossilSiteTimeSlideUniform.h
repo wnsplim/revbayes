@@ -11,9 +11,9 @@ namespace RevLanguage {
     
     
     /**
-     * @brief Rev wrapper class for the FossilTipTimeSlideUniform move.
+     * @brief Rev wrapper class for the FossilSiteTimeSlideUniform move.
      *
-     * This class is the Rev wrapper class for the FossilTipTimeSlideUniform move,
+     * This class is the Rev wrapper class for the FossilSiteTimeSlideUniform move,
      * a move that proposes a node age.
      *
      *

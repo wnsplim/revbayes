@@ -147,8 +147,8 @@ const MemberRules& Move_FossilSiteTimeSlideUniform::getParameterRules(void) cons
         
         move_member_rules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         move_member_rules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
-        move_member_rules.push_back( new ArgumentRule( "max", RealPos::getClassTypeSpec() , "The variable for the maximum age of this fossil tip.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
-        move_member_rules.push_back( new ArgumentRule( "min", RealPos::getClassTypeSpec() , "The variable for the minimun age of this fossil tip.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
+        move_member_rules.push_back( new ArgumentRule( "max", RealPos::getClassTypeSpec() , "The variable for the maximum age of this fossil site.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
+        move_member_rules.push_back( new ArgumentRule( "min", RealPos::getClassTypeSpec() , "The variable for the minimun age of this fossil site.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
         
         std::vector<TypeSpec> tip_index_arg_types;
         tip_index_arg_types.push_back( RlString::getClassTypeSpec() );

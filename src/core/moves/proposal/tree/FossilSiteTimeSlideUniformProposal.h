@@ -13,12 +13,10 @@
 namespace RevBayesCore {
     
     /**
-     * The node-age slide proposal operator using a Uniform distribution.
-     *
-     * This node-age proposal is a Uniform-sliding proposal on rooted subtrees without changing the topology.
-     * That is, we pick a random fossil node.
-     * Then, we pick an age between the parent and the present drawn from a Uniform distribution centered around the current age.
-     *
+     * This Uniform-sliding proposal changes the age of multiple tips of the tree at once, without modifying the tree topology.
+     * It ensures that after this move the included tips have the same age.
+     * However, it does not have the capacity to prevent other moves from making the included tips different-aged again afterwards.
+     * This move is adapted from FossilTimeSlideUniformProposal.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)

@@ -108,21 +108,20 @@ imaginary_fossil_site[2] = taxon("Indarctos_punjabiensis")
 ## All fossil site clades are moved individually
 moves.append( mvFossilSiteSlideUniform(fbd_tree, origin=origin_time, taxa=imaginary_fossil_site, weight=10.0) )
 
+
+
 ## Then, for the taxa not included in any of such fossil sites, all tips have to be moved independently by specifying tips
 # This is to avoid moving some of the already jointly moved taxa again
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Ailuropoda_melanoleuca", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Helarctos_malayanus", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Melursus_ursinus", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Tremarctos_ornatus", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Ursus_americanus", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Ursus_arctos", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Ursus_maritimus", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Agriarctos_spp", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Ailurarctos_lufengensis", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Ballusia_elmensis", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Indarctos_vireti", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Kretzoiarctos_beatrix", weight=5.0) )
-moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time, tip="Zaragocyon_daamsi", weight=5.0) )
+nonsitelinked_fossils = fossils
+nonsitelinked_fossils.erase( imaginary_fossil_site )
+
+for(i in 1:nonsitelinked_fossils.size())
+{
+    moves.append( mvFossilTimeSlideUniform(fbd_tree, origin_time,
+                                           tip=nonsitelinked_fossils[i],
+                                           weight=5.0) )
+}
+
 
 
 ### Create deterministic nodes to monitor various tree statistics ###
@@ -180,8 +179,6 @@ monitors.append( mnModel(filename="output/bears_mvFossilSiteTimeSlideUniform.log
 # 2. the tree #
 monitors.append( mnFile(filename="output/bears_mvFossilSiteTimeSlideUniform.trees", printgen=1, fbd_tree) )
 
-# 3. and a few select parameters to be printed to the screen #
-# monitors.append( mnScreen(printgen=10, within_site_age_diff, num_samp_anc, origin_time) )
 
 # Initialize the MCMC object #
 mymcmc = mcmc(mymodel, monitors, moves)
