@@ -174,10 +174,10 @@ monitors = VectorMonitors()
 
 # Create a vector of monitors #
 # 1. for the full model #
-monitors.append( mnModel(filename="output/bears_mvFossilSiteTimeSlideUniform.log", printgen=1, exclude = ["F"]) )
+monitors.append( mnModel(filename="test_FBD/output_expected/bears_mvFossilSiteTimeSlideUniform.log", printgen=1, exclude = ["F"]) )
 
 # 2. the tree #
-monitors.append( mnFile(filename="output/bears_mvFossilSiteTimeSlideUniform.trees", printgen=1, fbd_tree) )
+monitors.append( mnFile(filename="test_FBD/output_expected/bears_mvFossilSiteTimeSlideUniform.trees", printgen=1, fbd_tree) )
 
 
 # Initialize the MCMC object #
@@ -187,8 +187,8 @@ mymcmc = mcmc(mymodel, monitors, moves)
 mymcmc.run(generations=100)
 
 # Create MCC Tree
-trace = readTreeTrace("output/bears_mvFossilSiteTimeSlideUniform.trees")
-mapTree(trace, file="output/bears_mvFossilSiteTimeSlideUniform.map.tre")
+trace = readTreeTrace("test_FBD/output_expected/bears_mvFossilSiteTimeSlideUniform.trees")
+mapTree(trace, file="test_FBD/output_expected/bears_mvFossilSiteTimeSlideUniform.map.tre")
 
 
 # Quit RevBayes #
