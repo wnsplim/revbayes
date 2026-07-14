@@ -1,8 +1,8 @@
 ################################################################################
 #
 # RevBayes Test-Script: Check that we can initialize a nonclock tree analysis
-#                       enforcing a backbone constraint from a user-supplied
-#                       starting tree 
+#                       enforcing a multifurcating backbone tree that includes
+#                       all of the analyzed taxa
 #
 #
 # authors: David Cerny
@@ -14,7 +14,7 @@ seed(12345)
 # The dataset used here comes from Pol et al. (2024), Cladistics 40(3): 307-356.
 # The paper shows that nonclock analyses favor the Abelisauroidea topology and clock
 # analyses favor the Etrigansauria topology, so we will enforce Etrigansauria in the
-# nonclock analysis and Abelisauroidea in the clock analysis.
+# nonclock analysis.
 
 #######################
 # Reading in the data #
@@ -39,13 +39,10 @@ monitors = VectorMonitors()
 tree_dist = dnUniformTopologyBranchLength(species, branchLengthDistribution=dnExp(10))
 
 # Read in the backbone tree
-backbone_tree = readTrees("data/etrigansauria_backbone.tre", treetype="non-clock")[1]
-
-# Read in an initial tree
-init_tree = readTrees("data/etrigansauria_initial.tre", treetype="non-clock")[1]
+backbone_tree = readTrees("data/etrigansauria_backbone_complete_multifurcating.tre", treetype="non-clock")[1]
 
 # Impose the constraint
-psi ~ dnConstrainedTopology(tree_dist, backbone=backbone_tree, initialTree=init_tree)
+psi ~ dnConstrainedTopology(tree_dist, backbone=backbone_tree)
 
 # We need 2n - 3 for an unrooted tree
 n_branches := 2 * n_taxa - 3
@@ -118,8 +115,8 @@ for (i in 3:n_max_states) {
 mymodel = model(psi)
 
 # Add monitors
-monitors.append( mnModel(filename="output/backbone_initial_branchlengthtree.log", printgen=10) )
-monitors.append( mnFile(filename="output/backbone_initial_branchlengthtree.trees", printgen=10, psi) )
+monitors.append( mnModel(filename="output/backbone_multifurcating_branchlengthtree.log", printgen=10) )
+monitors.append( mnFile(filename="output/backbone_multifurcating_branchlengthtree.trees", printgen=10, psi) )
 
 # Create the workspace variable that defines an MCMC run
 mymcmc = mcmc(mymodel, monitors, moves)

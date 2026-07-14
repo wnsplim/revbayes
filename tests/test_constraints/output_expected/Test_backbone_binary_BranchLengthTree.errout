@@ -1,7 +1,5 @@
    Successfully read one character matrix from file 'data/ceratosauria_morphology.nex'
-   Attempting to read the contents of file "etrigansauria_backbone.tre"
-   Successfully read file
-   Attempting to read the contents of file "etrigansauria_initial.tre"
+   Attempting to read the contents of file "etrigansauria_backbone_incomplete_binary.tre"
    Successfully read file
    NOTE: setNumStatesPartition() partitions by the maximum observed state, not the total number of observed states.
    NOTE: setNumStatesPartition() partitions by the maximum observed state, not the total number of observed states.
