@@ -611,7 +611,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( SimulationCondition c )
     {
         new_value = starting_tree->clone();
         
-        // if the cast of the base_distribution to UniformTopologyBranchLengthDistributions succeeds, replace any NaN or zero branch
+        // If the cast of the base_distribution to UniformTopologyBranchLengthDistributions succeeds, replace any NaN or zero branch
         // lengths in the starting tree
         UniformTopologyBranchLengthDistribution* bl_dist = dynamic_cast<UniformTopologyBranchLengthDistribution*>( base_distribution );
         if ( bl_dist != NULL )
@@ -1068,6 +1068,47 @@ Tree* TopologyConstrainedTreeDistribution::simulateUnrootedTree( void )
                 }
             }
             
+        }
+        
+        // At this point the cloned backbone may still contain multifurcations.
+        // Because the downstream phylogenetic likelihood (e.g. dnPhyloCTMC) only
+        // accepts (nearly) binary trees, we randomly resolve any remaining
+        // polytomies. Resolving a polytomy only adds structure *within* it, so
+        // every split already present in the backbone is retained and none of the
+        // backbone constraints are violated.
+        
+        // Resolve all multifurcations below the root into bifurcations.
+        psi->resolveMultifurcations( false );
+        
+        // For an unrooted tree we keep the basal trifurcation, but a polytomy at
+        // the root (degree > 3) must still be broken up into a series of
+        // bifurcations until only three children remain.
+        TopologyNode& root_node = psi->getRoot();
+        while ( root_node.getNumberOfChildren() > 3 )
+        {
+            std::vector<TopologyNode*> root_children = root_node.getChildren();
+            
+            size_t left = size_t( GLOBAL_RNG->uniform01() * root_children.size() );
+            TopologyNode* left_child = root_children[left];
+            root_children.erase( root_children.begin() + left );
+            
+            size_t right = size_t( GLOBAL_RNG->uniform01() * root_children.size() );
+            TopologyNode* right_child = root_children[right];
+            
+            TopologyNode* new_parent = new TopologyNode();
+            // a branch length of zero is redrawn from the prior in assignBranchLengths()
+            new_parent->setBranchLength( 0.0 );
+            
+            root_node.removeChild( left_child );
+            root_node.removeChild( right_child );
+            
+            new_parent->addChild( left_child );
+            new_parent->addChild( right_child );
+            left_child->setParent( new_parent );
+            right_child->setParent( new_parent );
+            
+            root_node.addChild( new_parent );
+            new_parent->setParent( &root_node );
         }
         
         // initialize the topology by setting the root
