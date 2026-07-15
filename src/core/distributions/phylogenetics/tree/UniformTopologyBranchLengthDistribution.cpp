@@ -177,7 +177,7 @@ void UniformTopologyBranchLengthDistribution::assignBranchLengths(Tree &psi)
         
         double bl = node.getBranchLength();
         
-        // each branch length that is NaN or zero is reset to an independent draw from the prior
+        // each branch length that is NaN or nonpositive is reset to an independent draw from the prior
         if ( RbMath::isNan(bl) || bl <= 0.0 )
         {
             branch_length_prior->redrawValue();
