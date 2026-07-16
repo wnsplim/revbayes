@@ -116,6 +116,18 @@ BirthDeathSamplingTreatmentProcess::BirthDeathSamplingTreatmentProcess(const Typ
     }
 
     addParameter( interval_times_global );
+    
+    // addParameter() is safe to use even if the argument is NULL. We also don't need dynamic_cast here, since
+    // the timeline parameters already are RbVector's wrapped in TypedDagNode's. Finally, the sorting that we
+    // perform above for the global timeline should be handled for the parameter-specific timelines by
+    // prepareTimeline(), which we call below.
+    addParameter( interval_times_speciation );
+    addParameter( interval_times_extinction );
+    addParameter( interval_times_sampling );
+    addParameter( interval_times_treatment );
+    addParameter( interval_times_event_speciation );
+    addParameter( interval_times_event_extinction );
+    addParameter( interval_times_event_sampling );
 
     heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_speciation);
     homogeneous_lambda   = dynamic_cast<const TypedDagNode<double >*>(in_speciation);
