@@ -13,7 +13,7 @@
       in {
         packages.default = pkgs.stdenv.mkDerivation {
           pname = "revbayes";
-          version = "1.4.1";
+          version = "1.4.2-preview";
 
           src = ./.;
 
