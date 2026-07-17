@@ -71,7 +71,7 @@ BirthDeathSamplingTreatmentProcess::BirthDeathSamplingTreatmentProcess(const Typ
     interval_times_extinction(extinction_timeline),
     interval_times_sampling(sampling_timeline),
     interval_times_treatment(treatment_timeline),
-    interval_times_event_speciation(event_sampling_timeline),
+    interval_times_event_speciation(event_speciation_timeline),
     interval_times_event_extinction(event_extinction_timeline),
     interval_times_event_sampling(event_sampling_timeline),
     taxa(tn),
@@ -116,6 +116,18 @@ BirthDeathSamplingTreatmentProcess::BirthDeathSamplingTreatmentProcess(const Typ
     }
 
     addParameter( interval_times_global );
+    
+    // addParameter() is safe to use even if the argument is NULL. We also don't need dynamic_cast here, since
+    // the timeline parameters already are RbVector's wrapped in TypedDagNode's. Finally, the sorting that we
+    // perform above for the global timeline should be handled for the parameter-specific timelines by
+    // prepareTimeline(), which we call below.
+    addParameter( interval_times_speciation );
+    addParameter( interval_times_extinction );
+    addParameter( interval_times_sampling );
+    addParameter( interval_times_treatment );
+    addParameter( interval_times_event_speciation );
+    addParameter( interval_times_event_extinction );
+    addParameter( interval_times_event_sampling );
 
     heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_speciation);
     homogeneous_lambda   = dynamic_cast<const TypedDagNode<double >*>(in_speciation);
@@ -1895,55 +1907,112 @@ void BirthDeathSamplingTreatmentProcess::swapParameterInternal(const DagNode *ol
     {
         heterogeneous_lambda = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == heterogeneous_mu)
+    
+    if (oldP == heterogeneous_mu)
     {
         heterogeneous_mu = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == heterogeneous_phi)
+    
+    if (oldP == heterogeneous_phi)
     {
         heterogeneous_phi = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == homogeneous_lambda)
+    
+    if (oldP == homogeneous_lambda)
     {
         homogeneous_lambda = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == homogeneous_mu)
+    
+    if (oldP == homogeneous_mu)
     {
         homogeneous_mu = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == homogeneous_phi)
+    
+    if (oldP == homogeneous_phi)
     {
         homogeneous_phi = static_cast<const TypedDagNode<double>* >( newP );
     }
-    // Treatment
-    else if (oldP == heterogeneous_r)
+    
+    if (oldP == heterogeneous_r)
     {
         heterogeneous_r = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == homogeneous_r)
+    
+    if (oldP == homogeneous_r)
     {
         homogeneous_r = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
     // Event probability parameters
     if (oldP == heterogeneous_Lambda)
     {
         heterogeneous_Lambda = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == heterogeneous_Mu)
+    
+    if (oldP == heterogeneous_Mu)
     {
         heterogeneous_Mu = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == heterogeneous_Phi)
+    
+    if (oldP == heterogeneous_Phi)
     {
         heterogeneous_Phi = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == homogeneous_Phi)
+    
+    if (oldP == homogeneous_Phi)
     {
         homogeneous_Phi = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
+    if (oldP == heterogeneous_R)
+    {
+        heterogeneous_R = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    
+    // Rate timeline parameters
+    if (oldP == interval_times_global)
+    {
+        interval_times_global = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    
+    if (oldP == interval_times_speciation)
+    {
+        interval_times_speciation = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    
+    if (oldP == interval_times_extinction)
+    {
+        interval_times_extinction = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    
+    if (oldP == interval_times_sampling)
+    {
+        interval_times_sampling = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    
+    if (oldP == interval_times_treatment)
+    {
+        interval_times_treatment = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+        
+    // Event timeline parameters
+    if (oldP == interval_times_event_speciation)
+    {
+        interval_times_event_speciation = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    
+    if (oldP == interval_times_event_extinction)
+    {
+        interval_times_event_extinction = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    
+    if (oldP == interval_times_event_sampling)
+    {
+        interval_times_event_sampling = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
     else
     {
-        // delegate the super-class
+        // delegate to the super-class
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
 }
