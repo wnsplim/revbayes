@@ -13,10 +13,10 @@
 namespace RevBayesCore {
     
     /**
-     * This Uniform-sliding proposal changes the age of multiple tips of the tree at once, without modifying the tree topology.
+     * This Uniform-sliding proposal changes the age of multiple tips of the tree at once (tips originating from within one fossil site), without modifying the tree topology.
      * It ensures that after this move the included tips have the same age.
-     * However, it does not have the capacity to prevent other moves from making the included tips different-aged again afterwards.
      * This move is adapted from FossilTimeSlideUniformProposal.
+     * For the within-site ages to be equal in the MCC and MAP summary trees, set conditionalAges to TRUE in mccTree and mapTree.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
