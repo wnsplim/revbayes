@@ -13,8 +13,8 @@ dnUniform
 ## example
 	calib ~ dnSoftBoundUniformNormal( 13.6, 25, sd = 1.0, p = 0.95, "upper" )
 	moves[1] = mvSlide(calib, delta=0.1, weight=1.0)
-	monitors[1] = screenmonitor(printgen=1000, separator = TAB, calib)
-	mymodel = model(p)
+	monitors[1] = mnScreen(printgen=1000, calib)
+	mymodel = model(calib)
 	mymcmc = mcmc(mymodel, monitors, moves)
 	mymcmc.burnin(generations=20000,tuningInterval=100)
 	mymcmc.run(generations=200000)
