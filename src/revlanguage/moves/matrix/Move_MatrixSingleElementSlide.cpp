@@ -13,6 +13,7 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Natural.h"
 #include "RlBoolean.h"
 #include "MatrixRealSingleElementSlideProposal.h"
 #include "MetropolisHastingsMove.h"
@@ -21,6 +22,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
+#include "RevNullObject.h"
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
@@ -91,6 +93,18 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
         p->setTargetAcceptanceRate(tt);
     }
 
+    // row= and col= are 1-based; omitting them leaves the whole matrix as the pool
+    if ( row->getRevObject() != RevNullObject::getInstance() )
+    {
+        long rval = static_cast<const Natural &>( row->getRevObject() ).getValue();
+        static_cast<RevBayesCore::MatrixRealSingleElementSlideProposal*>(p)->setRow( size_t(rval) );
+    }
+    if ( col->getRevObject() != RevNullObject::getInstance() )
+    {
+        long cval = static_cast<const Natural &>( col->getRevObject() ).getValue();
+        static_cast<RevBayesCore::MatrixRealSingleElementSlideProposal*>(p)->setColumn( size_t(cval) );
+    }
+
     value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
 
 }
@@ -146,6 +160,8 @@ const MemberRules& Move_MatrixSingleElementSlide::getParameterRules(void) const
         move_member_rules.push_back( new ArgumentRule( "x"     , matTypes, "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         move_member_rules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()   , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
         move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec() , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        move_member_rules.push_back( new ArgumentRule( "row", Natural::getClassTypeSpec(), "Confine the move to this row; omit to use every element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        move_member_rules.push_back( new ArgumentRule( "col", Natural::getClassTypeSpec(), "Confine the move to this column; omit to use every element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -200,6 +216,12 @@ void Move_MatrixSingleElementSlide::setConstParameter(const std::string& name, c
     }
     else if ( name == "tune" ) {
         tune = var;
+    }
+    else if ( name == "row" ) {
+        row = var;
+    }
+    else if ( name == "col" ) {
+        col = var;
     }
     else {
         Move::setConstParameter(name, var);
