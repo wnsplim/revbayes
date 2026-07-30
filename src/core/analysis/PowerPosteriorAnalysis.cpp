@@ -634,11 +634,18 @@ void PowerPosteriorAnalysis::printStoneAssignmentToWorkers( void )
             
             if ( resume_from_checkpoint and !resume_stone_sequences.empty() )
             {
+                // Nested layout may supply fewer sequences than workers; leftover ranks are idle (see runAll()).
                 size_t worker_rank = size_t( floor(i / double(processors_per_likelihood)) );
                 bs = 0;
-                be = resume_stone_sequences[worker_rank].size();
-                
-                stone_sequence = resume_stone_sequences[worker_rank];
+                if ( worker_rank < resume_stone_sequences.size() )
+                {
+                    be = resume_stone_sequences[worker_rank].size();
+                    stone_sequence = resume_stone_sequences[worker_rank];
+                }
+                else
+                {
+                    be = 0;
+                }
             }
             else if ( resume_from_checkpoint and resume_stone_sequences.empty() )
             {
@@ -670,6 +677,13 @@ void PowerPosteriorAnalysis::printStoneAssignmentToWorkers( void )
             size_t work_num_char = std::to_string(i + 1).size();
             
             std::cout << (processors_per_likelihood > 1 ? std::string(18 - work_num_char, ' ') : std::string(7 - work_num_char, ' ')) << (i + 1) << " |";
+            
+            // Idle leftover worker under nested layout (no stone sequence assigned)
+            if ( stone_sequence.empty() )
+            {
+                std::cout << std::endl;
+                continue;
+            }
             
             // Some processes may be handling one fewer stone than others
             size_t iter_end;
@@ -867,7 +881,11 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_frac
     {
         if ( resume_from_checkpoint and !resume_stone_sequences.empty() )
         {
-            stone_sequences[i] = resume_stone_sequences[i];
+            // Nested layout may supply fewer sequences than workers; leave leftover slots empty.
+            if ( i < resume_stone_sequences.size() )
+            {
+                stone_sequences[i] = resume_stone_sequences[i];
+            }
         }
         else if ( resume_from_checkpoint and resume_stone_sequences.empty() )
         {
