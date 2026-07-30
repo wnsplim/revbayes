@@ -17,6 +17,7 @@
 #include "RbOrderedSet.h"
 #include "StochasticNode.h"
 #include "RbSettings.h" // for debugMCMC setting
+#include "RlUserInterface.h" // for RBOUT
 
 using boost::optional;
 
@@ -379,7 +380,15 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
             L = x1;
     }
 
-    std::abort();
+    // x0 is in the slice by the assert above, so returning it rejects the move.
+    // The loop left the variable at the last trial point, so restore it first.
+    static bool warned = false;
+    if (not warned)
+    {
+        RBOUT("Warning: slice sampler could not locate the slice after 200 steps");
+        warned = true;
+    }
+    g(x0);
 
     return x0;
 }
