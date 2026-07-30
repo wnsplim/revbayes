@@ -10,7 +10,16 @@ Progress:
 ********************************************************************
 
 
-Extending global pre-burnin phase of previous power posterior sampler by 40 iterations.
+Resuming global pre-burnin phase of power posterior sampler: running 30 of 80 planned iterations (50 already completed).
+The simulator uses 50 different moves in a random move schedule with 60 moves per iteration
+
+
+Progress:
+0---------------25---------------50---------------75--------------100
+********************************************************************
+
+
+Running global pre-burnin phase of power posterior sampler for 10 iterations.
 The simulator uses 50 different moves in a random move schedule with 60 moves per iteration
 
 

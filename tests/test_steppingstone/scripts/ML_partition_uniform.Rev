@@ -107,19 +107,31 @@ mymodel = model(psi)
 monitors[++mni] = mnFile(psi, filename="output/model_uniform_run_all.trees", printgen=10)
 monitors[++mni] = mnModel(filename="output/model_uniform_run_all.log", printgen=10)
 
-# step 1: run the global pre-burnin stage with checkpointing
+# step 1: run the global pre-burnin stage with checkpointing (fresh start, planned length = 50)
 pow_p = powerPosterior(mymodel, moves, monitors, "output/model_uniform_run_all.out", cats=10, sampleFreq=1)
 pow_p.burnin(generations=50, tuningInterval=200, checkpointFile="output/model_uniform_run_all_burnin.ckp",
              checkpointInterval=10)
 
-# step 2: resume from checkpoint to extend the global pre-burnin by an additional 40 generations
-pow_p.initializeFromCheckpoint( "output/model_uniform_run_all_burnin.ckp" )
-pow_p.burnin(generations=40, tuningInterval=200)
+# simulate an interrupted longer pre-burnin: rewrite the planned length to 80 so that resume-to-target
+# still has work to do
+write("iter = 50\n", filename="output/model_uniform_run_all_burnin_burnin_info.ckp")
+write("planned_burnin = 80\n", filename="output/model_uniform_run_all_burnin_burnin_info.ckp", append=TRUE)
 
-# step 3: run 10 stones for with checkpointing
+# step 2: resume-to-target by not specifying the "generations" argument; the checkpointing mechanism
+# automatically determines that 30 generations still need to be run by subtracting completed generations
+# from the (rewritten) planned pre-burnin
+pow_p.initializeFromCheckpoint( "output/model_uniform_run_all_burnin.ckp" )
+pow_p.burnin(tuningInterval=200, checkpointFile="output/model_uniform_run_all_burnin.ckp",
+             checkpointInterval=10)
+
+# step 3: resume again with the "generations" argument explicitly set to extend past the target by 10
+pow_p.initializeFromCheckpoint( "output/model_uniform_run_all_burnin.ckp" )
+pow_p.burnin(generations=10, tuningInterval=200)
+
+# step 4: run 10 stones for 10 generations each, with checkpointing
 pow_p.run(generations=10, checkpointFile="output/model_uniform_run_all.ckp", checkpointInterval=1)
 
-# step 4: resume from checkpoint to extend all the 10 stones we have just run by an additional 10 generations
+# step 5: resume from checkpoint to extend all the 10 stones we have just run by an additional 10 generations
 pow_p.initializeFromCheckpoint( "output/model_uniform_run_all.ckp", 1:10 )
 pow_p.run(generations=10)
 

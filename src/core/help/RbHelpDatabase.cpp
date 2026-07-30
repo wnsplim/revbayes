@@ -4766,12 +4766,24 @@ to checkpoint and resume the global pre-burnin as follows:
     pow_p.burnin(generations=10000, tuningInterval=100,
                  checkpointFile="pow_p_burnin.ckp", checkpointInterval=100)
     pow_p.initializeFromCheckpoint("pow_p_burnin.ckp")
-    pow_p.burnin(generations=10000, tuningInterval=100)
+    pow_p.burnin(tuningInterval=100)
+
+The checkpointing mechanism automatically records the planned length specified
+in the first call to `.burnin()`. As a result, there is no need to specify the
+`generations` argument upon resumption. If, for example, the original analysis
+was interrupted at generation 7500, the second call to `.burnin()` will ensure
+that the resumed analysis completes the remaining 2500 generations. However,
+the `generations` argument can be set in the second call as well. In this case,
+it extends the pre-burnin by the specified number of generations:
+
+    pow_p.initializeFromCheckpoint("pow_p_burnin.ckp")
+    pow_p.burnin(generations=5000, tuningInterval=100)
 
 Note that the necessary checkpoint files can also be produced by regular MCMC
 or MCMCMC analyses, so the `powerPosterior` sampler makes it possible to re-use
 the output of such analyses without requiring a lengthy global pre-burnin stage
-of its own.
+of its own. The `generations` must be explicitly set in this scenario, as there
+is no planned length for the "resume-to-target" functionality to utilize.
 
 Individual stones can also be checkpointed and resumed from a checkpoint. To do
 so, the `.initializeFromCheckpoint()` method takes a `stones` argument that
