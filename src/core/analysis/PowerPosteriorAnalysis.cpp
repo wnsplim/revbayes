@@ -97,15 +97,42 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
 
 
 /** Run burnin and autotune */
-void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, const path &checkpoint_file, size_t checkpoint_interval)
+void PowerPosteriorAnalysis::burnin(size_t generations, bool generations_specified, size_t tuningInterval, const path &checkpoint_file, size_t checkpoint_interval)
 {
     
 //    initMPI();
-    
+
+    /* Resolve the four possible situations that arise from combining the resumption mode with whether the caller specified the
+     * "generations" argument:
+     *
+     *   (1) fresh start, generations not specified -> error (we have no target to run to)
+     *   (2) fresh start, generations specified     -> run exactly 'generations'; that becomes the target
+     *   (3) resumption,  generations not specified -> "run to target": finish the originally planned pre-burnin
+     *   (4) resumption,  generations specified     -> run exactly 'generations' more, regardless of the stored target
+     *
+     * To make (3) possible we record, in a small extra checkpoint file (mirroring the per-stone '*_stone_info' file), both the
+     * number of generations completed so far ('iter') and the planned total ('planned_burnin'). This file is written only by the
+     * power posterior sampler, so it is absent when the burnin is seeded from a plain MCMC / MC^3 checkpoint (which carries only
+     * the base '*.ckp' and '*_moves' files). In this scenario, resume-to-target (case 3) throws an error asking for an explicit
+     * count, while an explicit extension (case 4) still works by starting a fresh counter.
+     */
+    size_t already_completed = 0;   // generations completed by any previous pre-burnin run (0 unless resuming)
+    size_t target            = 0;   // planned total length of the global pre-burnin
+    bool   have_info         = false; // true when *_burnin_info exists (PP-produced checkpoint, not a plain MCMC seed)
+
     // Initialize objects needed by chain
     if (!resume_from_checkpoint)
     {
+        // Case 1: a fresh run with no specified number of generations
+        if ( !generations_specified )
+        {
+            throw RbException("Please specify how many generations the global pre-burnin should be run for.");
+        }
+
         sampler->initializeSampler();
+
+        // Case 2: a fresh run with a specified number of generations defines its own target
+        target = generations;
     }
     else
     {
@@ -117,6 +144,71 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, c
          * create new ones, either.
          */
         sampler->baseInitializeSamplerFromCheckpoint();
+
+        // Recover how far the previous pre-burnin got and how long it was planned to run
+        bool missing_info          = false;
+
+        path info_file_name = appendToStem( ckp_burnin_file, "_burnin_info" );
+
+        // open file and initialize variables for parsing
+        std::ifstream in_file( info_file_name.string() );
+        std::string line;
+        std::map<std::string, std::string> pars;
+
+        // command-processing loop
+        while ( in_file.good() )
+        {
+            // read a line
+            safeGetline( in_file, line );
+
+            if ( line != "" )
+            {
+                std::vector<std::string> key_value;
+                StringUtilities::stringSplit( line, " = ", key_value );
+                pars.insert( std::pair<std::string, std::string>( key_value[0], key_value[1] ) );
+            }
+        }
+        in_file.close();
+
+        if ( pars.find("iter") == pars.end() || pars.find("planned_burnin") == pars.end() )
+        {
+            missing_info = true;
+        }
+
+        size_t completed_from_file = size_t( StringUtilities::asIntegerNumber( pars["iter"] ) );
+        size_t target_from_file    = size_t( StringUtilities::asIntegerNumber( pars["planned_burnin"] ) );
+
+        if ( !generations_specified )
+        {
+            // Case 3: resume to the originally planned target
+            if (missing_info)
+            {
+                throw RbException("Cannot resume the global pre-burnin to its planned length: the checkpoint does not record how "
+                                  "many generations were planned or completed. This happens, for instance, when seeding a power "
+                                  "posterior analysis from an MCMC or MC^3 checkpoint. Please specify the number of generations "
+                                  "of the global pre-burnin explicitly.");
+            }
+            already_completed = completed_from_file;
+            target            = target_from_file;
+        }
+        else
+        {
+            // Case 4: run exactly 'generations' more; the (possibly new) target is where we will end up
+            already_completed = missing_info ? 0 : completed_from_file;
+            target            = already_completed + generations;
+        }
+    }
+
+    // How many generations do we actually run during *this* call?
+    size_t run_generations;
+    if (!generations_specified)
+    {
+        // only reachable when resuming with a valid info file (see above)
+        run_generations = ( target > already_completed ) ? ( target - already_completed ) : 0;
+    }
+    else
+    {
+        run_generations = generations;
     }
     
     
@@ -124,7 +216,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, c
     sampler->reset();
     
     // start the progress bar
-    ProgressBar progress = ProgressBar(generations, 0);
+    ProgressBar progress = ProgressBar(run_generations, 0);
     
     if ( process_active == true )
     {
@@ -132,13 +224,19 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, c
         std::stringstream ss;
         ss << "\n";
         
-        if (!resume_from_checkpoint)
+        /** If we wanted to, we could offer more granular info about what's going on: e.g., distinguishing between a fresh start
+         * (when resume_from_checkpoint is false), extending an existing power posterior sampler from a checkpoint (when
+         * resume_from_checkpoint and generations_specified are both true, and missing_info is false), and starting a new power
+         * posterior sampler from an external (i.e., MCMC or MC^3) checkpoint (when missing_info is true).
+         */
+        if ( !resume_from_checkpoint or (resume_from_checkpoint and generations_specified) )
         {
-            ss << "Running global pre-burnin phase of power posterior sampler for " << generations << " iterations.\n";
+            ss << "Running global pre-burnin phase of power posterior sampler for " << run_generations << " iterations.\n";
         }
         else
         {
-            ss << "Extending global pre-burnin phase of previous power posterior sampler by " << generations << " iterations.\n";
+            ss << "Resuming global pre-burnin phase of power posterior sampler: running " << run_generations << " of " << target
+               << " planned iterations (" << already_completed << " already completed).\n";
         }
         
         ss << sampler->getStrategyDescription();
@@ -150,7 +248,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, c
     
     
     // Run the chain
-    for (size_t k=1; k<=generations; k++)
+    for (size_t k=1; k<=run_generations; k++)
     {
         if ( process_active == true )
         {
@@ -160,12 +258,15 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, c
         sampler->nextCycle(false);
             
         // check for autotuning
-        if ( tuningInterval != 0 && (k % tuningInterval) == 0 && k != generations )
+        if ( tuningInterval != 0 && (k % tuningInterval) == 0 && k != run_generations )
         {
             sampler->tune();
         }
         
-        // periodically checkpoint
+        /** Periodically checkpoint. Note that if the length of the global pre-burnin is not a multiple of checkpoint_interval,
+         * this will leave the counter short of the target even if the pre-burnin has in fact run to completion. A potential
+         * subsequent resume-to-target will therefore redo a handful of generations.
+         */
         if ( checkpoint_interval != 0 && (k % checkpoint_interval) == 0 )
         {
             sampler->setCheckpointFile(checkpoint_file);
@@ -176,12 +277,35 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval, c
              */
             if ( process_active == true )
             {
-                /** Again using the base step only here, because we do not want to write out the *_mcmc checkpoint file. We have no
-                 * monitors to restart, and the length of the pre-burnin stage is reset upon resumption -- i.e., it is determined
-                 * by whatever we specify in the call to .burnin() that we perform after having called initializeFromCheckpoint()
-                 * -- so we do not really care about the generation counter.
+                /** Again using the base step only here: we do not want to write out the *_mcmc checkpoint file, since we have no
+                 * monitors to restart. We do, however, record the generation counter and the planned length in a small extra file
+                 * of our own, so that a later call can resume the pre-burnin to its target (see the case analysis at the top).
                  */
                 sampler->baseCheckpoint();
+
+                path info_file_name = appendToStem( checkpoint_file, "_burnin_info" );
+                path tmp_info_file_name = info_file_name.parent_path() / ("." + info_file_name.filename().string() + ".tmp");
+
+                std::ofstream out_stream( tmp_info_file_name.string() );
+                out_stream << "iter = " << already_completed + k << std::endl;
+                out_stream << "planned_burnin = " << target << std::endl;
+                out_stream.close();
+
+                if ( !out_stream.good() )
+                {
+                    RBOUT( "Warning: failed to write \"" + info_file_name.string() + "\"; keeping existing file." );
+                    std::error_code ec;
+                    std::filesystem::remove( tmp_info_file_name, ec );
+                }
+                else
+#ifdef _WIN32
+                if ( MoveFileExW( tmp_info_file_name.wstring().c_str(), info_file_name.wstring().c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH ) == 0 )
+                {
+                    throw RbException() << "Could not replace checkpoint file " << info_file_name;
+                }
+#else
+                std::filesystem::rename( tmp_info_file_name, info_file_name );
+#endif
             }
 #ifdef RB_MPI
             MPI_Barrier( MPI_COMM_WORLD );

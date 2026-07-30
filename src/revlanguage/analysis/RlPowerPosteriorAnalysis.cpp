@@ -61,7 +61,7 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis() : WorkspaceToCoreWrapperObject<
     methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarize_arg_rules) );
 
     ArgumentRules* burnin_arg_rules = new ArgumentRules();
-    burnin_arg_rules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    burnin_arg_rules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run. Can be omitted when resuming from a checkpoint to complete the originally planned length.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
     burnin_arg_rules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency at which the moves are tuned (usually between 50 and 1000).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     burnin_arg_rules->push_back( new ArgumentRule("checkpointFile", RlString::getClassTypeSpec(), "The filename for the checkpoint file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
     burnin_arg_rules->push_back( new ArgumentRule("checkpointInterval", Natural::getClassTypeSpec(), "The interval when to write parameters values to a file for checkpointing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
@@ -203,13 +203,19 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
     {
         found = true;
 
-        // get the member with give index
-        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int tuningInterval = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        // 'generations' is optional: when omitted (RevNullObject) while resuming from a checkpoint, the core layer runs the
+        // global pre-burnin only until it reaches its originally planned length ("resume to target").
+        bool gen_specified = ( args[0].getVariable()->getRevObject() != RevNullObject::getInstance() );
+        size_t gen = 0;
+        if ( gen_specified )
+        {
+            gen = (size_t)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        }
+        int tuningInterval = (size_t)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         const std::string ckp_file = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
         size_t ckp_int = static_cast<const Natural &>( args[3].getVariable()->getRevObject() ).getValue();
         
-        value->burnin( size_t(gen), size_t(tuningInterval), ckp_file, ckp_int );
+        value->burnin( gen, gen_specified, tuningInterval, ckp_file, ckp_int );
 
         return NULL;
     }
