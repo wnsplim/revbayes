@@ -363,7 +363,7 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
 
     //double L0 = L, R0 = R;
 
-    for (int i=0;i<200;i++)
+    for (int i=0;i<100;i++)
     {
         double x1 = L + uniform()*(R-L);
 
@@ -385,7 +385,7 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
     static bool warned = false;
     if (not warned)
     {
-        RBOUT("Warning: slice sampler could not locate the slice after 200 steps");
+        RBOUT("Warning: slice sampler could not locate the slice after 100 steps");
         warned = true;
     }
     g(x0);
