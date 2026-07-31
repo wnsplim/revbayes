@@ -31,7 +31,7 @@ using namespace RevBayesCore;
  * \param[in]    field    Field name, for the error message.
  * \param[in]    line     1-based line number in the file, for the error message.
  */
-double RevBayesCore::parseNumericField(const std::string &s, const std::string &field, size_t line)
+double TaxonReader::parseNumericField(const std::string &s, const std::string &field, size_t line)
 {
     const char *begin = s.c_str();
     char *end = NULL;
