@@ -343,7 +343,7 @@ find_slice_boundaries_doubling(double x0,slice_function& g,double logy, double w
     assert( L < (L+R)/2 and (L+R)/2 < R);
 
     if (logMCMC >= 1)
-	std::cerr<<"     L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
+        std::cerr<<"      L0 = "<<L<<" (g(L) = "<<gL()<<")  x0 = "<<x0<<"   R0 = "<<R<<" (g(R) = "<<gR()<<")\n";
 
     return {L,R,gL_cached,gR_cached};
 }
@@ -504,7 +504,7 @@ double slice_sample_stepping_out(double x0, slice_function& g,double w, int m)
     int debugMCMC = RbSettings::userSettings().getDebugMCMC();
     int logMCMC = RbSettings::userSettings().getLogMCMC();
     if (logMCMC >= 1)
-	std::cerr<<"mvSlice("<<g.name()<<",stepping_out):  x0 = "<<x0<<"  g(x0) = "<<gx0<<"   logy = "<<logy<<"\n";
+	std::cerr<<"mvSlice("<<g.name()<<", stepping_out):  x0 = "<<x0<<"  g(x0) = "<<gx0<<"   logy = "<<logy<<"\n";
 
     if (debugMCMC >= 1) g.checkPrs();
 
@@ -532,7 +532,7 @@ double slice_sample_doubling(double x0, slice_function& g, double w, int m)
 
     int debugMCMC = RbSettings::userSettings().getDebugMCMC();
     int logMCMC = RbSettings::userSettings().getLogMCMC();
-    if (logMCMC >= 1) std::cerr<<"mvSlice("<<g.name()<<",stepping_out):  x0 = "<<x0<<"  g(x0) = "<<gx0<<"   logy = "<<logy<<"\n";
+    if (logMCMC >= 1) std::cerr<<"mvSlice("<<g.name()<<", doubling):  x0 = "<<x0<<"  g(x0) = "<<gx0<<"   logy = "<<logy<<"\n";
 
     if (debugMCMC >= 1) g.checkPrs();
 
