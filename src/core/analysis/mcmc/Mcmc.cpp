@@ -1135,7 +1135,7 @@ void Mcmc::setScheduleType(const std::string &s)
 /**
  * Start the monitors which will open the output streams.
  */
-void Mcmc::startMonitors( size_t num_cycles, bool reopen )
+void Mcmc::startMonitors( size_t num_cycles, bool reopen, double max_seconds )
 {
     
     // Open the output file and print headers
@@ -1146,7 +1146,7 @@ void Mcmc::startMonitors( size_t num_cycles, bool reopen )
         monitors[i].openStream( reopen );
         
         // reset the monitor
-        monitors[i].reset( num_cycles );
+        monitors[i].reset( num_cycles, max_seconds );
         
     }
     

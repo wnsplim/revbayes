@@ -24,6 +24,7 @@ ScreenMonitor::ScreenMonitor(DagNode *n, std::uint64_t g, bool pp, bool l, bool 
     headerPrintingInterval( 20 ),
     startTime( 0 ),
     numCycles( 0 ),
+    maxSeconds( 0.0 ),
     currentGen( 0 ),
     startGen( 0 ),
     replicateIndex( 0 )
@@ -41,6 +42,7 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, std::uint64_t g, b
     headerPrintingInterval( 20 ),
     startTime( 0 ),
     numCycles( 0 ),
+    maxSeconds( 0.0 ),
     currentGen( 0 ),
     startGen( 0 ),
     replicateIndex( 0 )
@@ -316,10 +318,11 @@ void ScreenMonitor::printHeader( void )
 }
 
 
-void ScreenMonitor::reset( size_t n )
+void ScreenMonitor::reset( size_t n, double max_seconds )
 {
     startGen = currentGen;
     numCycles = n;
+    maxSeconds = max_seconds;
     startTime = time( NULL );
     printWaitingTime = true;
 }

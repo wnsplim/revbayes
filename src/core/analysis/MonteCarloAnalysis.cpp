@@ -26,6 +26,7 @@
 #include "RbVectorImpl.h"
 #include "StoppingRule.h"
 #include "MaxIterationStoppingRule.h"
+#include "MaxTimeStoppingRule.h"
 #include "Trace.h"
 
 
@@ -587,6 +588,22 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             }
         }
     }
+
+    // Analogously, extract a wall-clock time target from any srMaxTime rules (again taking the most restrictive in the
+    // unexpected case of having more than one) and pass it to the monitors alongside the iteration target.
+    double max_seconds = 0.0;
+    for (size_t i = 0; i < rules.size(); ++i)
+    {
+        const MaxTimeStoppingRule* max_time = dynamic_cast<const MaxTimeStoppingRule*>( &rules[i] );
+        if ( max_time != NULL )
+        {
+            double rule_max = max_time->getMaxTime();
+            if ( max_seconds == 0.0 || rule_max < max_seconds )
+            {
+                max_seconds = rule_max;
+            }
+        }
+    }
     
     // get the current generation
     size_t gen = 0;
@@ -672,7 +689,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 runs[i]->disableScreenMonitor(true, i);
             }
             
-            runs[i]->startMonitors( kIterations, runs[i]->getCurrentGeneration() > 0 );
+            runs[i]->startMonitors( kIterations, runs[i]->getCurrentGeneration() > 0, max_seconds );
             
         }
         

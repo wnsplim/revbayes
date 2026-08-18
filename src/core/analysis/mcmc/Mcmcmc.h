@@ -69,7 +69,7 @@ namespace RevBayesCore {
         void                                    setSwapInterval2(const size_t &si2);
         void                                    setLikelihoodHeat(double h) override;                                                   //!< Set the heat of the likelihood function.
         void                                    setModel(Model *m, bool redraw) override;
-        void                                    startMonitors(size_t numCycles, bool reopen) override;                                  //!< Start the monitors
+        void                                    startMonitors(size_t numCycles, bool reopen, double maxSeconds) override;               //!< Start the monitors
         void                                    tune(void) override;                                                                    //!< Tune the sampler and its moves.
         void                                    writeMonitorHeaders(bool screen_only) override;                                         //!< Write the headers of the monitors.
 
