@@ -671,6 +671,38 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 ss << "    " << statement;
             }
         }
+
+        // If the analysis includes a screen monitor (which prints an ETA column by default) but neither an iteration nor a time target,
+        // (i.e., the 'generations' argument was not specified, and the stopping-rule vector contains neither MaxIteration nor MaxTime),
+        // we point out that ETA is going to be "??:??:??"
+        bool has_iteration_or_time_target = false;
+        for (size_t i = 0; i < rules.size(); ++i)
+        {
+            if ( dynamic_cast<const MaxIterationStoppingRule*>( &rules[i] ) != NULL ||
+                 dynamic_cast<const MaxTimeStoppingRule*>( &rules[i] ) != NULL )
+            {
+                has_iteration_or_time_target = true;
+                break;
+            }
+        }
+
+        bool has_screen_monitor = false;
+        RbVector<Monitor>& mons = runs[0]->getMonitors();
+        for (size_t i = 0; i < mons.size(); ++i)
+        {
+            if ( mons[i].isScreenMonitor() )
+            {
+                has_screen_monitor = true;
+                break;
+            }
+        }
+
+        if ( !has_iteration_or_time_target && has_screen_monitor )
+        {
+            ss << "\n";
+            ss << "NOTE: This run uses only convergence-based stopping rules, so there is no information\n";
+            ss << "      from which to estimate a time to completion (ETA).\n";
+        }
         
         RBOUT( ss.str() );
     }
