@@ -25,6 +25,7 @@
 #include "RbVector.h"
 #include "RbVectorImpl.h"
 #include "StoppingRule.h"
+#include "MaxIterationStoppingRule.h"
 #include "Trace.h"
 
 
@@ -566,6 +567,26 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
 void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, const path &checkpoint_file, size_t checkpoint_interval, int verbose )
 #endif
 {
+    
+    // When the 'generations' argument was omitted but the user supplied at least one srMaxIteration stopping rule, use it
+    // as the planned run length so that monitors (especially the "ETA" column of mnScreen) treat it as equivalent to
+    // .run(generations=N). We would not expect more than one srMaxIteration rule to be supplied, but if it does happen for
+    // whatever reason, we will use the most restrictive rule (i.e., the one specifying the shortest run).
+    if ( kIterations == 0 )
+    {
+        for (size_t i = 0; i < rules.size(); ++i)
+        {
+            const MaxIterationStoppingRule* max_iter = dynamic_cast<const MaxIterationStoppingRule*>( &rules[i] );
+            if ( max_iter != NULL )
+            {
+                size_t rule_max = max_iter->getMaxGenerations();
+                if ( kIterations == 0 || rule_max < kIterations )
+                {
+                    kIterations = rule_max;
+                }
+            }
+        }
+    }
     
     // get the current generation
     size_t gen = 0;
