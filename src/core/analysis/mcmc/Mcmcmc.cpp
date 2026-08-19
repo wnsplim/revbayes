@@ -1357,7 +1357,7 @@ void Mcmcmc::setActivePIDSpecialized(size_t i, size_t n)
 /**
  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
  */
-void Mcmcmc::startMonitors(size_t num_cycles, bool reopen)
+void Mcmcmc::startMonitors(size_t num_cycles, bool reopen, double max_seconds)
 {
     
     // Monitor
@@ -1366,7 +1366,7 @@ void Mcmcmc::startMonitors(size_t num_cycles, bool reopen)
         
         if ( chains[i] != NULL )
         {
-            chains[i]->startMonitors( num_cycles, reopen );
+            chains[i]->startMonitors( num_cycles, reopen, max_seconds );
         }
         
     }

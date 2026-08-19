@@ -76,7 +76,7 @@ namespace RevBayesCore {
         void                                                setMoves(const RbVector<Move> &mvs);
         void                                                setMovesTuningInfo(const std::vector<tuningInfo> &mvs_ti);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
-        void                                                startMonitors(size_t numCycles, bool reopen) override;                                  //!< Start the monitors
+        void                                                startMonitors(size_t numCycles, bool reopen, double maxSeconds) override;               //!< Start the monitors
         void                                                tune(void) override;                                                                    //!< Tune the sampler and its moves.
         void                                                writeMonitorHeaders(bool screen_only) override;                                         //!< Write the headers of the monitors
         
