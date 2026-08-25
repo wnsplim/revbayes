@@ -191,7 +191,7 @@ void SoftBoundUniformNormalDistribution::redrawValue( void )
     
     if ( stDev == NULL && prob == NULL )
     {
-        throw RbException( "Cannot compute sd and prob in SoftBoundUniformNormal distribution if neither is provided." );
+        throw RbException( "Cannot compute sd and p in SoftBoundUniformNormal distribution if neither is provided." );
     }
     else if ( stDev == NULL )
     {
