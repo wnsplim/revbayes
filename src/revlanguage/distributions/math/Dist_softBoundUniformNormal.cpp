@@ -11,7 +11,9 @@
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RbException.h"
 #include "RbHelpReference.h"
+#include "RevNullObject.h"
 #include "RevObject.h"
 #include "RevPtr.h"
 #include "RevVariable.h"
@@ -50,15 +52,13 @@ RevBayesCore::SoftBoundUniformNormalDistribution* Dist_SoftBoundUniformNormal::c
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* mi          = static_cast<const Real &>( min->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* ma          = static_cast<const Real &>( max->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<double>* s           = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<double>* p           = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* s           = NULL;
-    RevBayesCore::TypedDagNode<double>* p           = NULL;
+    RevBayesCore::TypedDagNode<double>* mi = static_cast<const Real &>( min->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ma = static_cast<const Real &>( max->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s  = NULL;
+    RevBayesCore::TypedDagNode<double>* p  = NULL;
     
     // condition
-    const std::string& bound                        = static_cast<const RlString &>( boundary->getRevObject() ).getValue();
+    const std::string& bound               = static_cast<const RlString &>( boundary->getRevObject() ).getValue();
     RevBayesCore::SoftBoundUniformNormalDistribution::BOUNDS soft_bounds = RevBayesCore::SoftBoundUniformNormalDistribution::BOTH;
     if ( bound == "upper" )
     {
@@ -68,23 +68,32 @@ RevBayesCore::SoftBoundUniformNormalDistribution* Dist_SoftBoundUniformNormal::c
     {
         soft_bounds = RevBayesCore::SoftBoundUniformNormalDistribution::LOWER;
     }
-    
-    if ( sd->getRevObject() == RevNullObject::getInstance() && prob->getRevObject() == RevNullObject::getInstance() )
+
+    bool has_sd = ( sd->getRevObject() != RevNullObject::getInstance() );
+    bool has_p  = ( prob->getRevObject() != RevNullObject::getInstance() );
+
+    if ( has_sd == has_p )
     {
-        throw RbException("You need to either provide the 'sd' or 'prob' parameter for the SoftBoundUniformNormal distribution.");
+        if ( has_sd )
+        {
+            throw RbException("dnSoftBoundUniformNormal: provide exactly one of 'sd' or 'p', not both.");
+        }
+        else
+        {
+            throw RbException("dnSoftBoundUniformNormal: provide exactly one of 'sd' or 'p'.");
+        }
     }
     
-    if ( sd->getRevObject() != RevNullObject::getInstance() )
+    if ( has_sd )
     {
         s = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
     }
-    
-    if ( prob->getRevObject() != RevNullObject::getInstance() )
+    else
     {
         p = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
     }
     
-    RevBayesCore::SoftBoundUniformNormalDistribution*   d    = new RevBayesCore::SoftBoundUniformNormalDistribution(mi, ma, s, p, soft_bounds);
+    RevBayesCore::SoftBoundUniformNormalDistribution* d = new RevBayesCore::SoftBoundUniformNormalDistribution(mi, ma, s, p, soft_bounds);
     
     return d;
 }
@@ -150,11 +159,12 @@ std::string Dist_SoftBoundUniformNormal::getDistributionFunctionName( void ) con
 /**
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the branch rate jump process are:
- * (1) the min of the uniform distribution.
- * (2) the max of the uniform distribution.
- * (3) the standard deviation of the normal.
- * (4) the probability of belonging to distribution one.
+ * The member rules of the soft-bounded normal-tailed uniform distribution are:
+ * (1) the min of the uniform component
+ * (2) the max of the uniform component
+ * (3) either the standard deviation of the normal tail(s), or
+ * (4) the probability of being in [min, max] (exactly one of the two)
+ * (5) the boundary/boundaries buttressed by the normal tail(s) (both, upper, lower).
  *
  * \return The member rules.
  */
@@ -168,8 +178,8 @@ const MemberRules& Dist_SoftBoundUniformNormal::getParameterRules(void) const
     {
         dist_member_rules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec()       , "The min value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         dist_member_rules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec()       , "The max value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
-        dist_member_rules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , "The standard deviation of the normal distribution. You need to either specify this value, or it can be computed based on the probability of being withing the uniform boundaries.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        dist_member_rules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), "The probability of being within the uniform distribution. You need to either specify this value, or it can be computed based on the standard deviation of the normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , "The standard deviation of the normal tail(s). Can be specified directly, or computed from 'p'.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        dist_member_rules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), "The probability of being within the uniform boundaries. Can be specified directly, or computed from 'sd'.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         std::vector<std::string> boundary_types;
         boundary_types.push_back( "both" );

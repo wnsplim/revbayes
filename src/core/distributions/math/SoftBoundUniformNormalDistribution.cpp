@@ -80,12 +80,12 @@ double SoftBoundUniformNormalDistribution::computeLnProbability( void )
 
     double min_val  = min->getValue();
     double max_val  = max->getValue();
-    double sd       = 1.0;
-    double p        = 0.95;
+    double sd;
+    double p;
     
     if ( stDev == NULL && prob == NULL )
     {
-        throw RbException( "Cannot compute sd and prob in SoftBoundUniformNormal distribution if neither is provided." );
+        throw RbException( "Cannot compute sd and p in SoftBoundUniformNormal distribution if neither is provided." );
     }
     else if ( stDev == NULL )
     {
@@ -99,8 +99,7 @@ double SoftBoundUniformNormalDistribution::computeLnProbability( void )
     }
     else
     {
-        p   = prob->getValue();
-        sd  = stDev->getValue();
+        throw RbException( "The sd and p parameters of SoftBoundUniformNormal distribution cannot be provided simultaneously." );
     }
     
     if ( *value < min_val )
@@ -187,8 +186,8 @@ void SoftBoundUniformNormalDistribution::redrawValue( void )
 
     double min_val  = min->getValue();
     double max_val  = max->getValue();
-    double sd       = 1.0;
-    double p        = 0.95;
+    double sd;
+    double p;
     
     if ( stDev == NULL && prob == NULL )
     {
@@ -206,8 +205,7 @@ void SoftBoundUniformNormalDistribution::redrawValue( void )
     }
     else
     {
-        p   = prob->getValue();
-        sd  = stDev->getValue();
+        throw RbException( "The sd and p parameters of SoftBoundUniformNormal distribution cannot be provided simultaneously." );
     }
     
     double u = GLOBAL_RNG->uniform01();
