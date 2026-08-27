@@ -104,13 +104,9 @@ double SoftBoundUniformNormalDistribution::computeLnProbability( void )
     
     if ( *value < min_val )
     {
-        if ( soft_bound == BOTH )
+        if ( soft_bound != UPPER )
         {
-            return log((1-p)/2.0) + RbStatistics::Normal::lnPdf( 0.0, sd, *value - min_val );
-        }
-        else if ( soft_bound == LOWER )
-        {
-            return log(1-p) + RbStatistics::Normal::lnPdf( 0.0, sd, *value - min_val );
+            return log( (1-p)/side_factor ) + RbStatistics::Normal::lnPdf( 0.0, sd, *value - min_val );
         }
         else
         {
@@ -120,13 +116,9 @@ double SoftBoundUniformNormalDistribution::computeLnProbability( void )
     else if ( *value > max_val )
     {
         
-        if ( soft_bound == BOTH )
+        if ( soft_bound != LOWER )
         {
-            return log((1-p)/2.0) + RbStatistics::Normal::lnPdf( 0.0, sd, *value - max_val );
-        }
-        else if ( soft_bound == UPPER )
-        {
-            return log(1-p) + RbStatistics::Normal::lnPdf( 0.0, sd, *value - max_val );
+            return log( (1-p)/side_factor ) + RbStatistics::Normal::lnPdf( 0.0, sd, *value - max_val );
         }
         else
         {
